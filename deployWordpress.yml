@@ -1,0 +1,25 @@
+---
+- name: Deploy Wordpress
+  hosts: webservers
+  remote_user: root
+  roles:
+    - geerlingguy.docker
+
+  tasks:
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: ~/wp-deployment/
+        state: directory
+        mode: "0755"
+
+    - name: "Copy the Docker Compose File"
+      ansible.builtin.copy:
+        src: docker-compose.yml
+        dest: ~/wp-deployment/docker-compose.yml
+        mode: "0644"
+
+    - name: "Start Docker Compose"
+      community.docker.docker_compose_v2:
+        project_src: ~/wp-deployment/
+        remove_orphans: true
+        wait: true
